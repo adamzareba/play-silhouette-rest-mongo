@@ -1,7 +1,7 @@
 package service
 
 import com.mohiva.play.silhouette.api.services.IdentityService
-import models.User
+import models.security.User
 import reactivemongo.api.commands.WriteResult
 
 import scala.concurrent.Future

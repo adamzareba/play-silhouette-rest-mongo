@@ -1,4 +1,4 @@
-package formatters
+package formatters.json
 
 import org.joda.time.DateTime
 import play.api.libs.json._

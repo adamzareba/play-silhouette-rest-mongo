@@ -8,7 +8,8 @@ import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
 import com.mohiva.play.silhouette.api.util.{Clock, Credentials, PasswordHasherRegistry}
 import com.mohiva.play.silhouette.impl.exceptions.IdentityNotFoundException
 import com.mohiva.play.silhouette.impl.providers._
-import formatters.{CredentialsFormatter, Token}
+import formatters.json.{CredentialFormat, Token}
+import models.security.SignUp
 import play.api.Configuration
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
@@ -19,19 +20,18 @@ import utils.auth.DefaultEnv
 
 import scala.concurrent.Future
 
-class AuthenticationController @Inject()(userService: UserService,
-                                         configuration: Configuration,
-                                         silhouette: Silhouette[DefaultEnv],
-                                         clock: Clock,
-                                         credentialsProvider: CredentialsProvider,
-                                         authInfoRepository: AuthInfoRepository,
-                                         passwordHasherRegistry: PasswordHasherRegistry,
-                                         val messagesApi: MessagesApi)
-  extends Controller
-    with I18nSupport {
+class CredentialsAuthController @Inject()(userService: UserService,
+                                          configuration: Configuration,
+                                          silhouette: Silhouette[DefaultEnv],
+                                          clock: Clock,
+                                          credentialsProvider: CredentialsProvider,
+                                          authInfoRepository: AuthInfoRepository,
+                                          passwordHasherRegistry: PasswordHasherRegistry,
+                                          val messagesApi: MessagesApi) extends Controller with I18nSupport {
 
-  implicit val credentialFormat =
-    CredentialsFormatter.format
+  implicit val credentialFormat = CredentialFormat.restFormat
+
+  implicit val signUpFormat = Json.format[SignUp]
 
   def authenticate = Action.async(parse.json[Credentials]) { implicit request =>
     val credentials =

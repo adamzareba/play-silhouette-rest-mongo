@@ -3,7 +3,7 @@ package dao
 import javax.inject.Inject
 
 import com.mohiva.play.silhouette.api.LoginInfo
-import models.User
+import models.security.User
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json.Json
 import play.modules.reactivemongo.ReactiveMongoApi

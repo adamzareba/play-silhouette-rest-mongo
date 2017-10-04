@@ -1,6 +1,6 @@
-package models
+package models.security
 
-import com.mohiva.play.silhouette.api.{ Identity, LoginInfo }
+import com.mohiva.play.silhouette.api.{Identity, LoginInfo}
 import play.api.libs.json.Json
 
 case class User(id: Option[String], username: String, loginInfo: LoginInfo,

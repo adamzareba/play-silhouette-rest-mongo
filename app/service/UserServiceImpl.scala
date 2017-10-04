@@ -4,7 +4,7 @@ import javax.inject.Inject
 
 import com.mohiva.play.silhouette.api.LoginInfo
 import dao.UserDao
-import models.User
+import models.security.User
 import reactivemongo.api.commands.WriteResult
 
 import scala.concurrent.Future
