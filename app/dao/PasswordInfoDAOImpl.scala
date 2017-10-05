@@ -5,16 +5,15 @@ import javax.inject.Inject
 import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.api.util.PasswordInfo
 import com.mohiva.play.silhouette.persistence.daos.DelegableAuthInfoDAO
-import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json.{JsObject, Json}
 import play.modules.reactivemongo.ReactiveMongoApi
 import reactivemongo.play.json._
 import reactivemongo.play.json.collection._
 import utils.JsonBuilder
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-class PasswordInfoDAOImpl @Inject()(val reactiveMongoApi: ReactiveMongoApi) extends DelegableAuthInfoDAO[PasswordInfo] {
+class PasswordInfoDAOImpl @Inject()(val reactiveMongoApi: ReactiveMongoApi)(implicit ex: ExecutionContext) extends DelegableAuthInfoDAO[PasswordInfo] {
 
   def passwords = reactiveMongoApi.database.map(_.collection[JSONCollection]("password"))
 

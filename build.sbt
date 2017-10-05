@@ -9,7 +9,7 @@ scalaVersion := "2.12.3"
 resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/"
 
 libraryDependencies ++= Seq(
-  "org.reactivemongo" %% "play2-reactivemongo" % "0.12.7-SNAPSHOT",
+  "org.reactivemongo" %% "play2-reactivemongo" % "0.12.6-play26",
   "com.mohiva" %% "play-silhouette" % "5.0.0",
   "com.mohiva" %% "play-silhouette-persistence" % "5.0.0",
   "com.mohiva" %% "play-silhouette-password-bcrypt" % "5.0.0",

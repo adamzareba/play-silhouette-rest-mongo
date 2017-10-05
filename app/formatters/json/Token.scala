@@ -16,7 +16,7 @@ object Token {
 
   implicit object TokenWrites extends OWrites[Token] {
     def writes(token: Token): JsObject = {
-      var json = Json.obj(
+      val json = Json.obj(
         "token" -> token.token,
         "userId" -> token.userId,
         "expiresOn" -> token.expiresOn.toString
