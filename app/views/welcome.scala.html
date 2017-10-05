@@ -31,15 +31,15 @@
             </p>
 
             <pre><code># Home page
-                GET     /               controllers.HomeController.index</code></pre>
+GET     /               controllers.HomeController.index</code></pre>
 
             <p>
                 Play has invoked the <code>controllers.HomeController.index</code> method to obtain the <code>Action</code> to execute:
             </p>
 
             <pre><code>def index = Action { implicit request: Request[AnyContent] =>
-                Ok(views.html.index("Your new application is ready!"))
-                }</code></pre>
+    Ok(views.html.index("Your new application is ready!"))
+}</code></pre>
 
             <p>
                 An action is a function that handles the incoming HTTP request, and returns the HTTP result to send back to the web client.
@@ -52,11 +52,11 @@
 
             <pre><code>@@(message: String)
 
-                @@main("Welcome to Play") {
+@@main("Welcome to Play") {
 
-                @@welcome(message)
+    @@welcome(message)
 
-                }</code></pre>
+}</code></pre>
 
             <p>
                 The first line of the template defines the function signature. Here it just takes a single <code>String</code> parameter.

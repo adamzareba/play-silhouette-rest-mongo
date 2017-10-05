@@ -1,7 +1,9 @@
 package module
 
+import javax.inject.Inject
+
 import com.google.inject.name.Named
-import com.google.inject.{AbstractModule, Provides, TypeLiteral}
+import com.google.inject.{AbstractModule, Provides}
 import com.mohiva.play.silhouette.api.actions.{SecuredErrorHandler, UnsecuredErrorHandler}
 import com.mohiva.play.silhouette.api.crypto.{Crypter, CrypterAuthenticatorEncoder, Signer}
 import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
@@ -19,12 +21,12 @@ import net.ceedubs.ficus.Ficus._
 import net.ceedubs.ficus.readers.ArbitraryTypeReader._
 import net.codingwell.scalaguice.ScalaModule
 import play.api.Configuration
-import play.api.libs.concurrent.Execution.Implicits._
 import play.api.libs.ws.WSClient
 import service.{UserService, UserServiceImpl}
 import utils.auth.{CustomSecuredErrorHandler, CustomUnsecuredErrorHandler, DefaultEnv}
+import scala.concurrent.ExecutionContext.Implicits.global
 
-class Module extends AbstractModule with ScalaModule {
+class SilhouetteModule extends AbstractModule with ScalaModule {
 
   override def configure() = {
     bind[Silhouette[DefaultEnv]].to[SilhouetteProvider[DefaultEnv]]
@@ -133,8 +135,7 @@ class Module extends AbstractModule with ScalaModule {
     * @return The auth info repository instance.
     */
   @Provides
-  def provideAuthInfoRepository(passwordInfoDAO: DelegableAuthInfoDAO[PasswordInfo]
-                               ): AuthInfoRepository =
+  def provideAuthInfoRepository(passwordInfoDAO: DelegableAuthInfoDAO[PasswordInfo]): AuthInfoRepository =
   new DelegableAuthInfoRepository(passwordInfoDAO)
 
 }
