@@ -1,7 +1,5 @@
 package module
 
-import javax.inject.Inject
-
 import com.google.inject.name.Named
 import com.google.inject.{AbstractModule, Provides}
 import com.mohiva.play.silhouette.api.actions.{SecuredErrorHandler, UnsecuredErrorHandler}
@@ -12,7 +10,7 @@ import com.mohiva.play.silhouette.api.util._
 import com.mohiva.play.silhouette.api.{Environment, EventBus, Silhouette, SilhouetteProvider}
 import com.mohiva.play.silhouette.crypto.{JcaCrypter, JcaCrypterSettings, JcaSigner, JcaSignerSettings}
 import com.mohiva.play.silhouette.impl.authenticators._
-import com.mohiva.play.silhouette.impl.util.{DefaultFingerprintGenerator, SecureRandomIDGenerator}
+import com.mohiva.play.silhouette.impl.util.{DefaultFingerprintGenerator, PlayCacheLayer, SecureRandomIDGenerator}
 import com.mohiva.play.silhouette.password.BCryptPasswordHasher
 import com.mohiva.play.silhouette.persistence.daos.DelegableAuthInfoDAO
 import com.mohiva.play.silhouette.persistence.repositories.DelegableAuthInfoRepository
@@ -24,17 +22,18 @@ import play.api.Configuration
 import play.api.libs.ws.WSClient
 import service.{UserService, UserServiceImpl}
 import utils.auth.{CustomSecuredErrorHandler, CustomUnsecuredErrorHandler, DefaultEnv}
+
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class SilhouetteModule extends AbstractModule with ScalaModule {
 
   override def configure() = {
     bind[Silhouette[DefaultEnv]].to[SilhouetteProvider[DefaultEnv]]
-
     bind[UnsecuredErrorHandler].to[CustomUnsecuredErrorHandler]
     bind[SecuredErrorHandler].to[CustomSecuredErrorHandler]
-    bind[UserDao].to[UserDaoImpl]
     bind[UserService].to[UserServiceImpl]
+    bind[UserDAO].to[UserDAOImpl]
+    bind[CacheLayer].to[PlayCacheLayer]
     bind[IDGenerator].toInstance(new SecureRandomIDGenerator())
     bind[PasswordHasher].toInstance(new BCryptPasswordHasher)
     bind[FingerprintGenerator].toInstance(new DefaultFingerprintGenerator(false))
@@ -77,7 +76,7 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
   @Named("authenticator-signer")
   def provideAuthenticatorCookieSigner(configuration: Configuration): Signer = {
     val config =
-      configuration.underlying.as[JcaSignerSettings]("silhouette.authenticator.cookie.signer")
+      configuration.underlying.as[JcaSignerSettings]("silhouette.authenticator.signer")
 
     new JcaSigner(config)
   }

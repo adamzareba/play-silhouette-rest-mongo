@@ -6,7 +6,7 @@ import reactivemongo.api.commands.WriteResult
 
 import scala.concurrent.Future
 
-trait UserDao {
+trait UserDAO {
 
   def save(user: User): Future[WriteResult]
   def find(loginInfo: LoginInfo): Future[Option[User]]

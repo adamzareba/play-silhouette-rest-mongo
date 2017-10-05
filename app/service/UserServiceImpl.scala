@@ -3,13 +3,13 @@ package service
 import javax.inject.Inject
 
 import com.mohiva.play.silhouette.api.LoginInfo
-import dao.UserDao
+import dao.UserDAO
 import models.security.User
 import reactivemongo.api.commands.WriteResult
 
 import scala.concurrent.Future
 
-class UserServiceImpl @Inject()(userDao: UserDao) extends UserService {
+class UserServiceImpl @Inject()(userDao: UserDAO) extends UserService {
 
   override def retrieve(loginInfo: LoginInfo): Future[Option[User]] =
     userDao.find(loginInfo)

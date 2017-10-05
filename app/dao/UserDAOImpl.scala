@@ -12,7 +12,7 @@ import reactivemongo.play.json.collection._
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class UserDaoImpl @Inject()(val reactiveMongoApi: ReactiveMongoApi)(implicit ex: ExecutionContext) extends UserDao {
+class UserDAOImpl @Inject()(val reactiveMongoApi: ReactiveMongoApi)(implicit ex: ExecutionContext) extends UserDAO {
 
   def users = reactiveMongoApi.database.map(_.collection[JSONCollection]("user"))
 

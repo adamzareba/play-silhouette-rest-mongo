@@ -23,6 +23,7 @@ libraryDependencies ++= Seq(
   "com.adrianhurt" %% "play-bootstrap" % "1.2-P26-B3",
   "com.typesafe.play" %% "play-json" % "2.6.0",
   specs2 % Test,
+  ehcache,
   guice
 )
 
