@@ -5,13 +5,14 @@ import com.google.inject.{AbstractModule, Provides}
 import com.mohiva.play.silhouette.api.actions.{SecuredErrorHandler, UnsecuredErrorHandler}
 import com.mohiva.play.silhouette.api.crypto.{Crypter, CrypterAuthenticatorEncoder, Signer}
 import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
-import com.mohiva.play.silhouette.api.services.AuthenticatorService
+import com.mohiva.play.silhouette.api.services.{AuthenticatorService, AvatarService}
 import com.mohiva.play.silhouette.api.util._
 import com.mohiva.play.silhouette.api.{Environment, EventBus, Silhouette, SilhouetteProvider}
 import com.mohiva.play.silhouette.crypto.{JcaCrypter, JcaCrypterSettings, JcaSigner, JcaSignerSettings}
 import com.mohiva.play.silhouette.impl.authenticators._
+import com.mohiva.play.silhouette.impl.services.GravatarService
 import com.mohiva.play.silhouette.impl.util.{DefaultFingerprintGenerator, PlayCacheLayer, SecureRandomIDGenerator}
-import com.mohiva.play.silhouette.password.BCryptPasswordHasher
+import com.mohiva.play.silhouette.password.{BCryptPasswordHasher, BCryptSha256PasswordHasher}
 import com.mohiva.play.silhouette.persistence.daos.DelegableAuthInfoDAO
 import com.mohiva.play.silhouette.persistence.repositories.DelegableAuthInfoRepository
 import dao._
@@ -35,7 +36,6 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
     bind[UserDAO].to[UserDAOImpl]
     bind[CacheLayer].to[PlayCacheLayer]
     bind[IDGenerator].toInstance(new SecureRandomIDGenerator())
-    bind[PasswordHasher].toInstance(new BCryptPasswordHasher)
     bind[FingerprintGenerator].toInstance(new DefaultFingerprintGenerator(false))
     bind[EventBus].toInstance(EventBus())
     bind[Clock].toInstance(Clock())
@@ -120,12 +120,12 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
   /**
     * Provides the password hasher registry.
     *
-    * @param passwordHasher The default password hasher implementation.
     * @return The password hasher registry.
     */
   @Provides
-  def providePasswordHasherRegistry(passwordHasher: PasswordHasher): PasswordHasherRegistry =
-  new PasswordHasherRegistry(passwordHasher)
+  def providePasswordHasherRegistry(): PasswordHasherRegistry = {
+    PasswordHasherRegistry(new BCryptSha256PasswordHasher(), Seq(new BCryptPasswordHasher()))
+  }
 
   /**
     * Provides the auth info repository.
@@ -137,4 +137,12 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
   def provideAuthInfoRepository(passwordInfoDAO: DelegableAuthInfoDAO[PasswordInfo]): AuthInfoRepository =
   new DelegableAuthInfoRepository(passwordInfoDAO)
 
+  /**
+    * Provides the avatar service.
+    *
+    * @param httpLayer The HTTP layer implementation.
+    * @return The avatar service implementation.
+    */
+  @Provides
+  def provideAvatarService(httpLayer: HTTPLayer): AvatarService = new GravatarService(httpLayer)
 }
