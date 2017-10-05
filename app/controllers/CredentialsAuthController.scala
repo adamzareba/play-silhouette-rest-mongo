@@ -28,7 +28,7 @@ class CredentialsAuthController @Inject()(components: ControllerComponents,
                                           authInfoRepository: AuthInfoRepository,
                                           passwordHasherRegistry: PasswordHasherRegistry,
                                           messagesApi: MessagesApi)
-                                         (implicit ex: ExecutionContext)extends AbstractController(components) with I18nSupport {
+                                         (implicit ex: ExecutionContext) extends AbstractController(components) with I18nSupport {
 
   implicit val credentialFormat = CredentialFormat.restFormat
 

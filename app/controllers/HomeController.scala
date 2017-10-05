@@ -1,11 +1,17 @@
 package controllers
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
+
+import com.mohiva.play.silhouette.api.Silhouette
+import play.api.libs.json.Json
 import play.api.mvc._
-import javax.inject.Singleton
+import utils.auth.DefaultEnv
+
+import scala.concurrent.Future
 
 @Singleton
-class HomeController @Inject()(cc: ControllerComponents) extends AbstractController(cc) {
+class HomeController @Inject()(components: ControllerComponents,
+                               silhouette: Silhouette[DefaultEnv]) extends AbstractController(components) {
 
   /**
     * Create an Action to render an HTML page with a welcome message.
@@ -17,4 +23,7 @@ class HomeController @Inject()(cc: ControllerComponents) extends AbstractControl
     Ok(views.html.index("Your new application is ready."))
   }
 
+  def badPassword = silhouette.SecuredAction.async { implicit request =>
+    Future.successful(Ok(Json.obj("result" -> "qwerty1234")))
+  }
 }
