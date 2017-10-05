@@ -2,31 +2,32 @@ package controllers
 
 import javax.inject.Inject
 
-import com.mohiva.play.silhouette.api.{LoginEvent, LoginInfo, SignUpEvent, Silhouette}
 import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
 import com.mohiva.play.silhouette.api.util.{Clock, PasswordHasherRegistry}
+import com.mohiva.play.silhouette.api.{LoginEvent, LoginInfo, SignUpEvent, Silhouette}
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
-import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import formatters.json.{CredentialFormat, Token}
 import models.security.{SignUp, User}
 import play.api.Configuration
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.libs.json.{JsError, Json}
-import play.api.mvc.{Action, Controller}
+import play.api.mvc.{AbstractController, ControllerComponents}
 import service.UserService
 import utils.auth.DefaultEnv
 import utils.responses.rest.Bad
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-class SignUpController @Inject()(userService: UserService,
-                                          configuration: Configuration,
-                                          silhouette: Silhouette[DefaultEnv],
-                                          clock: Clock,
-                                          credentialsProvider: CredentialsProvider,
-                                          authInfoRepository: AuthInfoRepository,
-                                          passwordHasherRegistry: PasswordHasherRegistry,
-                                          val messagesApi: MessagesApi) extends Controller with I18nSupport {
+class SignUpController @Inject()(components: ControllerComponents,
+                                 userService: UserService,
+                                  configuration: Configuration,
+                                  silhouette: Silhouette[DefaultEnv],
+                                  clock: Clock,
+                                  credentialsProvider: CredentialsProvider,
+                                  authInfoRepository: AuthInfoRepository,
+                                  passwordHasherRegistry: PasswordHasherRegistry,
+                                  messagesApi: MessagesApi)
+                                (implicit ex: ExecutionContext) extends AbstractController(components) with I18nSupport {
 
   implicit val credentialFormat = CredentialFormat.restFormat
 
@@ -46,7 +47,7 @@ class SignUpController @Inject()(userService: UserService,
             authenticator <- silhouette.env.authenticatorService.create(loginInfo)
             token <- silhouette.env.authenticatorService.init(authenticator)
             result <- silhouette.env.authenticatorService.embed(token,
-              Ok(Json.toJson(Token(token = token, uuid = user.loginInfo.providerKey, expiresOn = authenticator.expirationDateTime)))
+              Ok(Json.toJson(Token(token = token, userId = user.loginInfo.providerKey, expiresOn = authenticator.expirationDateTime)))
             )
           } yield {
             silhouette.env.eventBus.publish(SignUpEvent(user, request))

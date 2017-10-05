@@ -12,22 +12,23 @@ import formatters.json.{CredentialFormat, Token}
 import models.security.SignUp
 import play.api.Configuration
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json.Json
-import play.api.mvc.{Action, Controller}
+import play.api.mvc.{AbstractController, ControllerComponents}
 import service.UserService
 import utils.auth.DefaultEnv
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-class CredentialsAuthController @Inject()(userService: UserService,
+class CredentialsAuthController @Inject()(components: ControllerComponents,
+                                          userService: UserService,
                                           configuration: Configuration,
                                           silhouette: Silhouette[DefaultEnv],
                                           clock: Clock,
                                           credentialsProvider: CredentialsProvider,
                                           authInfoRepository: AuthInfoRepository,
                                           passwordHasherRegistry: PasswordHasherRegistry,
-                                          val messagesApi: MessagesApi) extends Controller with I18nSupport {
+                                          messagesApi: MessagesApi)
+                                         (implicit ex: ExecutionContext)extends AbstractController(components) with I18nSupport {
 
   implicit val credentialFormat = CredentialFormat.restFormat
 
@@ -61,7 +62,7 @@ class CredentialsAuthController @Inject()(userService: UserService,
                           Json.toJson(
                             Token(
                               token,
-                              uuid = user.loginInfo.providerID,
+                              userId = user.loginInfo.providerID,
                               expiresOn = authenticator.expirationDateTime
                             )
                           )
