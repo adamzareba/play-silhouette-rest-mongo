@@ -6,4 +6,4 @@ resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases"
 
 resolvers += Resolver.sonatypeRepo("releases")
 
-addSbtPlugin("com.typesafe.play" % "sbt-plugin" % "2.5.15")
+addSbtPlugin("com.typesafe.play" % "sbt-plugin" % "2.6.3")

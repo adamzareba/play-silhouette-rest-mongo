@@ -59,7 +59,7 @@ class SignUpController @Inject()(userService: UserService,
       }
     }.recoverTotal {
       case error =>
-        Future.successful(BadRequest(Json.toJson(Bad(message = JsError.toFlatJson(error)))))
+        Future.successful(BadRequest(Json.toJson(Bad(message = JsError.toJson(error)))))
     }
   }
 

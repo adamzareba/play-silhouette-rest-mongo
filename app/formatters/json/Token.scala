@@ -14,8 +14,11 @@ case class Token(var token: String, var uuid: String, var expiresOn: DateTime)
 
 object Token {
 
-  implicit val reader = Json.reads[Token]
-  implicit val writer = Json.writes[Token]
+//  implicit val dateWrites = jodaDateWrites("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
+//  implicit val dateReads = jodaDateReads("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
+//
+//  implicit val writer = Json.writes[Token]
+//  implicit val reader = Json.reads[Token]
 
   implicit object TokenWrites extends OWrites[Token] {
     def writes(token: Token): JsObject = {

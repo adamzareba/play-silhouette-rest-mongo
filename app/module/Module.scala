@@ -3,12 +3,12 @@ package module
 import com.google.inject.name.Named
 import com.google.inject.{AbstractModule, Provides, TypeLiteral}
 import com.mohiva.play.silhouette.api.actions.{SecuredErrorHandler, UnsecuredErrorHandler}
-import com.mohiva.play.silhouette.api.crypto.{CookieSigner, Crypter, CrypterAuthenticatorEncoder}
+import com.mohiva.play.silhouette.api.crypto.{Crypter, CrypterAuthenticatorEncoder, Signer}
 import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
 import com.mohiva.play.silhouette.api.services.AuthenticatorService
 import com.mohiva.play.silhouette.api.util._
 import com.mohiva.play.silhouette.api.{Environment, EventBus, Silhouette, SilhouetteProvider}
-import com.mohiva.play.silhouette.crypto.{JcaCookieSigner, JcaCookieSignerSettings, JcaCrypter, JcaCrypterSettings}
+import com.mohiva.play.silhouette.crypto.{JcaCrypter, JcaCrypterSettings, JcaSigner, JcaSignerSettings}
 import com.mohiva.play.silhouette.impl.authenticators._
 import com.mohiva.play.silhouette.impl.util.{DefaultFingerprintGenerator, SecureRandomIDGenerator}
 import com.mohiva.play.silhouette.password.BCryptPasswordHasher
@@ -17,29 +17,29 @@ import com.mohiva.play.silhouette.persistence.repositories.DelegableAuthInfoRepo
 import dao._
 import net.ceedubs.ficus.Ficus._
 import net.ceedubs.ficus.readers.ArbitraryTypeReader._
+import net.codingwell.scalaguice.ScalaModule
 import play.api.Configuration
 import play.api.libs.concurrent.Execution.Implicits._
 import play.api.libs.ws.WSClient
 import service.{UserService, UserServiceImpl}
 import utils.auth.{CustomSecuredErrorHandler, CustomUnsecuredErrorHandler, DefaultEnv}
 
-class Module extends AbstractModule {
+class Module extends AbstractModule with ScalaModule {
 
   override def configure() = {
-    bind(new TypeLiteral[Silhouette[DefaultEnv]] {})
-      .to(new TypeLiteral[SilhouetteProvider[DefaultEnv]] {})
+    bind[Silhouette[DefaultEnv]].to[SilhouetteProvider[DefaultEnv]]
 
-    bind(classOf[UnsecuredErrorHandler]).to(classOf[CustomUnsecuredErrorHandler])
-    bind(classOf[SecuredErrorHandler]).to(classOf[CustomSecuredErrorHandler])
-    bind(classOf[UserDao]).to(classOf[UserDaoImpl])
-    bind(classOf[UserService]).to(classOf[UserServiceImpl])
-    bind(classOf[IDGenerator]).toInstance(new SecureRandomIDGenerator())
-    bind(classOf[PasswordHasher]).toInstance(new BCryptPasswordHasher)
-    bind(classOf[FingerprintGenerator]).toInstance(new DefaultFingerprintGenerator(false))
-    bind(classOf[EventBus]).toInstance(EventBus())
-    bind(classOf[Clock]).toInstance(Clock())
+    bind[UnsecuredErrorHandler].to[CustomUnsecuredErrorHandler]
+    bind[SecuredErrorHandler].to[CustomSecuredErrorHandler]
+    bind[UserDao].to[UserDaoImpl]
+    bind[UserService].to[UserServiceImpl]
+    bind[IDGenerator].toInstance(new SecureRandomIDGenerator())
+    bind[PasswordHasher].toInstance(new BCryptPasswordHasher)
+    bind[FingerprintGenerator].toInstance(new DefaultFingerprintGenerator(false))
+    bind[EventBus].toInstance(EventBus())
+    bind[Clock].toInstance(Clock())
 
-    bind(new TypeLiteral[DelegableAuthInfoDAO[PasswordInfo]] {}).to(classOf[PasswordInfoDAOImpl])
+    bind[DelegableAuthInfoDAO[PasswordInfo]].to[PasswordInfoDAOImpl]
   }
 
   /**
@@ -72,12 +72,12 @@ class Module extends AbstractModule {
     * @return The cookie signer for the authenticator.
     */
   @Provides
-  @Named("authenticator-cookie-signer")
-  def provideAuthenticatorCookieSigner(configuration: Configuration): CookieSigner = {
+  @Named("authenticator-signer")
+  def provideAuthenticatorCookieSigner(configuration: Configuration): Signer = {
     val config =
-      configuration.underlying.as[JcaCookieSignerSettings]("silhouette.authenticator.cookie.signer")
+      configuration.underlying.as[JcaSignerSettings]("silhouette.authenticator.cookie.signer")
 
-    new JcaCookieSigner(config)
+    new JcaSigner(config)
   }
 
   /**
@@ -110,9 +110,7 @@ class Module extends AbstractModule {
                                   idGenerator: IDGenerator,
                                   configuration: Configuration,
                                   clock: Clock): AuthenticatorService[JWTAuthenticator] = {
-    val settings = JWTAuthenticatorSettings(
-      sharedSecret = configuration.getString("play.crypto.secret").get
-    )
+    val settings = JWTAuthenticatorSettings(sharedSecret = configuration.get[String]("play.http.secret.key"))
     val encoder = new CrypterAuthenticatorEncoder(crypter)
 
     new JWTAuthenticatorService(settings, None, encoder, idGenerator, clock)
