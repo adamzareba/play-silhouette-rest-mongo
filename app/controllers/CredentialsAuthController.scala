@@ -62,7 +62,6 @@ class CredentialsAuthController @Inject()(components: ControllerComponents,
                           Json.toJson(
                             Token(
                               token,
-                              userId = user.loginInfo.providerID,
                               expiresOn = authenticator.expirationDateTime
                             )
                           )
