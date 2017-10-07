@@ -22,6 +22,8 @@ libraryDependencies ++= Seq(
   "net.codingwell" %% "scala-guice" % "4.1.0",
   "com.adrianhurt" %% "play-bootstrap" % "1.2-P26-B3",
   "com.typesafe.play" %% "play-json" % "2.6.0",
+  "io.swagger" %% "swagger-play2" % "1.6.1-SNAPSHOT",
+  "org.webjars" % "swagger-ui" % "3.2.2",
   specs2 % Test,
   ehcache,
   guice

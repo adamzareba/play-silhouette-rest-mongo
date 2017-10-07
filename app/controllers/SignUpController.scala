@@ -8,6 +8,7 @@ import com.mohiva.play.silhouette.api.util.{Clock, PasswordHasherRegistry}
 import com.mohiva.play.silhouette.api._
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
 import formatters.json.{CredentialFormat, Token}
+import io.swagger.annotations.{Api, ApiImplicitParam, ApiImplicitParams, ApiOperation}
 import models.security.{SignUp, User}
 import play.api.Configuration
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
@@ -20,6 +21,7 @@ import utils.responses.rest.Bad
 
 import scala.concurrent.{ExecutionContext, Future}
 
+@Api(value = "Registration")
 class SignUpController @Inject()(components: ControllerComponents,
                                  userService: UserService,
                                  configuration: Configuration,
@@ -37,6 +39,17 @@ class SignUpController @Inject()(components: ControllerComponents,
 
   implicit val signUpFormat = Json.format[SignUp]
 
+  @ApiOperation(value = "Register and get authentication token", response = classOf[Token])
+  @ApiImplicitParams(
+    Array(
+      new ApiImplicitParam(
+        value = "SignUp",
+        required = true,
+        dataType = "models.security.SignUp",
+        paramType = "body"
+      )
+    )
+  )
   def signUp = Action.async(parse.json) { implicit request =>
     request.body.validate[SignUp].map { signUp =>
       val loginInfo = LoginInfo(CredentialsProvider.ID, signUp.identifier)
@@ -55,7 +68,7 @@ class SignUpController @Inject()(components: ControllerComponents,
               Ok(Json.toJson(Token(token = token, expiresOn = authenticator.expirationDateTime)))
             )
           } yield {
-            val url = routes.HomeController.index().absoluteURL()
+            val url = routes.ApplicationController.index().absoluteURL()
             mailerClient.send(Email(
               subject = Messages("email.sign.up.subject"),
               from = Messages("email.from"),

@@ -3,6 +3,7 @@ package controllers
 import javax.inject.{Inject, Singleton}
 
 import com.mohiva.play.silhouette.api.Silhouette
+import io.swagger.annotations.ApiOperation
 import play.api.libs.json.Json
 import play.api.mvc._
 import utils.auth.DefaultEnv
@@ -10,8 +11,8 @@ import utils.auth.DefaultEnv
 import scala.concurrent.Future
 
 @Singleton
-class HomeController @Inject()(components: ControllerComponents,
-                               silhouette: Silhouette[DefaultEnv]) extends AbstractController(components) {
+class ApplicationController @Inject()(components: ControllerComponents,
+                                      silhouette: Silhouette[DefaultEnv]) extends AbstractController(components) {
 
   /**
     * Create an Action to render an HTML page with a welcome message.
@@ -21,6 +22,14 @@ class HomeController @Inject()(components: ControllerComponents,
     */
   def index = Action {
     Ok(views.html.index("Your new application is ready."))
+  }
+
+  @ApiOperation(value = "View check in", hidden = true)
+  def redirectDocs = Action {
+    Redirect(
+      url = "/assets/lib/swagger-ui/index.html",
+      queryString = Map("url" -> Seq("/swagger.json"))
+    )
   }
 
   def badPassword = silhouette.SecuredAction.async { implicit request =>

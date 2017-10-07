@@ -9,6 +9,7 @@ import com.mohiva.play.silhouette.api.util.{Clock, Credentials, PasswordHasherRe
 import com.mohiva.play.silhouette.impl.exceptions.IdentityNotFoundException
 import com.mohiva.play.silhouette.impl.providers._
 import formatters.json.{CredentialFormat, Token}
+import io.swagger.annotations.{Api, ApiImplicitParam, ApiImplicitParams, ApiOperation}
 import models.security.SignUp
 import play.api.Configuration
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -19,6 +20,7 @@ import utils.auth.DefaultEnv
 
 import scala.concurrent.{ExecutionContext, Future}
 
+@Api(value = "Authentication")
 class CredentialsAuthController @Inject()(components: ControllerComponents,
                                           userService: UserService,
                                           configuration: Configuration,
@@ -34,6 +36,17 @@ class CredentialsAuthController @Inject()(components: ControllerComponents,
 
   implicit val signUpFormat = Json.format[SignUp]
 
+  @ApiOperation(value = "Get authentication token", response = classOf[Token])
+  @ApiImplicitParams(
+    Array(
+      new ApiImplicitParam(
+        value = "Credentials",
+        required = true,
+        dataType = "com.mohiva.play.silhouette.api.util.Credentials",
+        paramType = "body"
+      )
+    )
+  )
   def authenticate = Action.async(parse.json[Credentials]) { implicit request =>
     val credentials =
       Credentials(request.body.identifier, request.body.password)

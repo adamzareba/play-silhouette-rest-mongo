@@ -2,9 +2,13 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
+# Swagger API
+GET         /swagger.json                                                   controllers.ApiHelpController.getResources
+GET         /docs                                                           controllers.ApplicationController.redirectDocs
+
 # Home page
-GET         /                                                               controllers.HomeController.index
-GET         /badPassword                                                    controllers.HomeController.badPassword
+GET         /                                                               controllers.ApplicationController.index
+GET         /badPassword                                                    controllers.ApplicationController.badPassword
 
 POST        /api/auth/signin/credentials                                    controllers.CredentialsAuthController.authenticate
 POST        /api/auth/signup                                                controllers.SignUpController.signUp
