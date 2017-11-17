@@ -10,11 +10,11 @@ resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repos
 
 libraryDependencies ++= Seq(
   "org.reactivemongo" %% "play2-reactivemongo" % "0.12.6-play26",
-  "com.mohiva" %% "play-silhouette" % "5.0.0",
-  "com.mohiva" %% "play-silhouette-persistence" % "5.0.0",
-  "com.mohiva" %% "play-silhouette-password-bcrypt" % "5.0.0",
-  "com.mohiva" %% "play-silhouette-crypto-jca" % "5.0.0",
-  "com.mohiva" %% "play-silhouette-testkit" % "5.0.0" % "test",
+  "com.mohiva" %% "play-silhouette" % "5.0.2",
+  "com.mohiva" %% "play-silhouette-persistence" % "5.0.2",
+  "com.mohiva" %% "play-silhouette-password-bcrypt" % "5.0.2",
+  "com.mohiva" %% "play-silhouette-crypto-jca" % "5.0.2",
+  "com.mohiva" %% "play-silhouette-testkit" % "5.0.2" % "test",
   "com.iheart" %% "ficus" % "1.4.1",
   "com.typesafe.play" %% "play-mailer" % "6.0.1",
   "com.typesafe.play" %% "play-mailer-guice" % "6.0.1",

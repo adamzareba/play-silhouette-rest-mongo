@@ -57,7 +57,7 @@ class CredentialsAuthController @Inject()(components: ControllerComponents,
           case Some(user) if !user.activated =>
             Future.failed(new IdentityNotFoundException("Couldn't find user"))
           case Some(user) =>
-            val c = configuration.underlying
+            val config = configuration.underlying
             silhouette.env.authenticatorService
               .create(loginInfo)
               .map {
