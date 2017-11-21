@@ -55,6 +55,17 @@ curl http://localhost:9000/badPassword -H 'X-Auth-Token:eyJ0eXAiOiJKV1QiLCJhbGci
 
 {"result":"qwerty1234"}
 ```
+## Built-in users
+
+| username    | password        |
+| ----------- |:---------------:|
+| test1       | test1Password   |
+| test2       | test2Password   |
+
+## Database reload
+
+It is possible to reload database with based data with scripts:
+[recreate.bat](database/recreate.bat) or [recreate.sh](database/recreate.sh)
 
 # License
 

@@ -2,7 +2,6 @@ package formatters.json
 
 import org.joda.time.DateTime
 import play.api.libs.json._
-import utils.JsonBuilder
 
 /**
   * This class represent token

@@ -14,22 +14,56 @@ import reactivemongo.play.json.collection._
 import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, Future}
 
+/**
+  * Implementation of the authenticator repository which uses the database layer to persist the authenticator.
+  */
 class AuthenticatorRepositoryImpl @Inject()(reactiveMongoApi: ReactiveMongoApi)(implicit ec: ExecutionContext) extends AuthenticatorRepository[JWTAuthenticator] {
 
-  def tokens = reactiveMongoApi.database.map(_.collection[JSONCollection]("jwt.auth.repo"))
+  final val maxDuration = 12 hours
 
+  /**
+    * The data store for the password info.
+    */
+  def passwordInfo = reactiveMongoApi.database.map(_.collection[JSONCollection]("passwordInfo"))
+
+  /**
+    * Finds the authenticator for the given ID.
+    *
+    * @param id The authenticator ID.
+    * @return The found authenticator or None if no authenticator could be found for the given ID.
+    */
   override def find(id: String): Future[Option[JWTAuthenticator]] = {
-    tokens.flatMap(_.find(Json.obj("_id" -> id)).one[JWTAuthenticator])
+    passwordInfo.flatMap(_.find(Json.obj("_id" -> id)).one[JWTAuthenticator])
   }
 
+  /**
+    * Adds a new authenticator.
+    *
+    * @param authenticator The authenticator to add.
+    * @return The added authenticator.
+    */
   override def add(authenticator: JWTAuthenticator): Future[JWTAuthenticator] = {
-    val duration = 12 hours
-    val obj = Json.obj("_id" -> authenticator.id, "authenticator" -> authenticator, "duration" -> duration)
-    tokens.flatMap(_.insert(obj)).flatMap(_ => Future(authenticator))
+    val passInfo = Json.obj("_id" -> authenticator.id, "authenticator" -> authenticator, "duration" -> maxDuration)
+    passwordInfo.flatMap(_.insert(passInfo)).flatMap(_ => Future(authenticator))
   }
 
-  override def update(authenticator: JWTAuthenticator) = ???
+  /**
+    * Updates an already existing authenticator.
+    *
+    * @param authenticator The authenticator to update.
+    * @return The updated authenticator.
+    */
+  override def update(authenticator: JWTAuthenticator) = {
+    val passInfo = Json.obj("_id" -> authenticator.id, "authenticator" -> authenticator, "duration" -> maxDuration)
+    passwordInfo.flatMap(_.update(Json.obj("_id" -> authenticator.id), passInfo)).flatMap(_ => Future(authenticator))
+  }
 
+  /**
+    * Removes the authenticator for the given ID.
+    *
+    * @param id The authenticator ID.
+    * @return An empty future.
+    */
   override def remove(id: String): Future[Unit] =
-    tokens.flatMap(_.remove(Json.obj("_id" -> id))).map(_ => id)
+    passwordInfo.flatMap(_.remove(Json.obj("_id" -> id))).flatMap(_ => Future.successful(()))
 }
