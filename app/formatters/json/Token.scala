@@ -21,8 +21,7 @@ object Token {
         "expiresOn" -> token.expiresOn.toString
       )
 
-      val builder = new JsonBuilder(json)
-      builder.get
+      json
     }
   }
 }

@@ -54,7 +54,7 @@ object User {
           try {
             val id = (user \ "_id" \ "$oid").asOpt[String]
 
-            val providerId = (user \ "loginInfo" \ "providerId").as[String]
+            val providerId = (user \ "loginInfo" \ "providerID").as[String]
             val providerKey = (user \ "loginInfo" \ "providerKey").as[String]
 
             val username = (user \ "userName").as[String]

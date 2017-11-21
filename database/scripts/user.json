@@ -4,6 +4,7 @@
       "providerID": "1",
       "providerKey": "test1"
     },
+    "email": "test1@test.com",
     "username": "test1",
     "firstName": "Test1",
     "lastName": "Test1",
@@ -14,6 +15,7 @@
       "providerID": "2",
       "providerKey": "test2"
     },
+    "email": "test2@test.com",
     "username": "test2",
     "firstName": "Test2",
     "lastName": "Test2",

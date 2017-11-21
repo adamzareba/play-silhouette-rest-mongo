@@ -4,7 +4,7 @@ import com.google.inject.name.Named
 import com.google.inject.{AbstractModule, Provides}
 import com.mohiva.play.silhouette.api.actions.{SecuredErrorHandler, UnsecuredErrorHandler}
 import com.mohiva.play.silhouette.api.crypto.{Crypter, CrypterAuthenticatorEncoder, Signer}
-import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
+import com.mohiva.play.silhouette.api.repositories.{AuthInfoRepository, AuthenticatorRepository}
 import com.mohiva.play.silhouette.api.services.{AuthenticatorService, AvatarService}
 import com.mohiva.play.silhouette.api.util._
 import com.mohiva.play.silhouette.api.{Environment, EventBus, Silhouette, SilhouetteProvider}
@@ -21,6 +21,7 @@ import net.ceedubs.ficus.readers.ArbitraryTypeReader._
 import net.codingwell.scalaguice.ScalaModule
 import play.api.Configuration
 import play.api.libs.ws.WSClient
+import play.modules.reactivemongo.ReactiveMongoApi
 import service.{UserService, UserServiceImpl}
 import utils.auth.{CustomSecuredErrorHandler, CustomUnsecuredErrorHandler, DefaultEnv}
 
@@ -41,6 +42,7 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
     bind[Clock].toInstance(Clock())
 
     bind[DelegableAuthInfoDAO[PasswordInfo]].to[PasswordInfoDAOImpl]
+    bind[AuthenticatorRepository[JWTAuthenticator]].to[AuthenticatorRepositoryImpl]
   }
 
   /**
@@ -110,11 +112,13 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
   def provideAuthenticatorService(@Named("authenticator-crypter") crypter: Crypter,
                                   idGenerator: IDGenerator,
                                   configuration: Configuration,
-                                  clock: Clock): AuthenticatorService[JWTAuthenticator] = {
+                                  clock: Clock,
+                                  reactiveMongoApi: ReactiveMongoApi): AuthenticatorService[JWTAuthenticator] = {
     val settings = JWTAuthenticatorSettings(sharedSecret = configuration.get[String]("play.http.secret.key"))
     val encoder = new CrypterAuthenticatorEncoder(crypter)
+    val authenticatorRepository = new AuthenticatorRepositoryImpl(reactiveMongoApi)
 
-    new JWTAuthenticatorService(settings, None, encoder, idGenerator, clock)
+    new JWTAuthenticatorService(settings, Some(authenticatorRepository), encoder, idGenerator, clock)
   }
 
   /**
