@@ -25,10 +25,10 @@ class ApplicationController @Inject()(components: ControllerComponents,
   }
 
   @ApiOperation(value = "View check in", hidden = true)
-  def redirectDocs = Action {
+  def redirectDocs = Action { implicit request =>
     Redirect(
       url = "/assets/lib/swagger-ui/index.html",
-      queryString = Map("url" -> Seq("/swagger.json"))
+      queryString = Map("url" -> Seq("http://" + request.host + "/swagger.json"))
     )
   }
 
