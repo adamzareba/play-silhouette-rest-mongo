@@ -3,15 +3,15 @@ package module
 import com.google.inject.name.Named
 import com.google.inject.{AbstractModule, Provides}
 import com.mohiva.play.silhouette.api.actions.{SecuredErrorHandler, UnsecuredErrorHandler}
-import com.mohiva.play.silhouette.api.crypto.{Crypter, CrypterAuthenticatorEncoder, Signer}
+import com.mohiva.play.silhouette.api.crypto.{Crypter, CrypterAuthenticatorEncoder}
 import com.mohiva.play.silhouette.api.repositories.{AuthInfoRepository, AuthenticatorRepository}
 import com.mohiva.play.silhouette.api.services.{AuthenticatorService, AvatarService}
 import com.mohiva.play.silhouette.api.util._
 import com.mohiva.play.silhouette.api.{Environment, EventBus, Silhouette, SilhouetteProvider}
-import com.mohiva.play.silhouette.crypto.{JcaCrypter, JcaCrypterSettings, JcaSigner, JcaSignerSettings}
+import com.mohiva.play.silhouette.crypto.{JcaCrypter, JcaCrypterSettings}
 import com.mohiva.play.silhouette.impl.authenticators._
 import com.mohiva.play.silhouette.impl.services.GravatarService
-import com.mohiva.play.silhouette.impl.util.{DefaultFingerprintGenerator, PlayCacheLayer, SecureRandomIDGenerator}
+import com.mohiva.play.silhouette.impl.util.{PlayCacheLayer, SecureRandomIDGenerator}
 import com.mohiva.play.silhouette.password.{BCryptPasswordHasher, BCryptSha256PasswordHasher}
 import com.mohiva.play.silhouette.persistence.daos.DelegableAuthInfoDAO
 import com.mohiva.play.silhouette.persistence.repositories.DelegableAuthInfoRepository
@@ -37,7 +37,6 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
     bind[UserDAO].to[UserDAOImpl]
     bind[CacheLayer].to[PlayCacheLayer]
     bind[IDGenerator].toInstance(new SecureRandomIDGenerator())
-    bind[FingerprintGenerator].toInstance(new DefaultFingerprintGenerator(false))
     bind[EventBus].toInstance(EventBus())
     bind[Clock].toInstance(Clock())
 
@@ -69,21 +68,6 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
   Environment[DefaultEnv](userService, authenticatorService, Seq(), eventBus)
 
   /**
-    * Provides the cookie signer for the authenticator.
-    *
-    * @param configuration The Play configuration.
-    * @return The cookie signer for the authenticator.
-    */
-  @Provides
-  @Named("authenticator-signer")
-  def provideAuthenticatorCookieSigner(configuration: Configuration): Signer = {
-    val config =
-      configuration.underlying.as[JcaSignerSettings]("silhouette.authenticator.signer")
-
-    new JcaSigner(config)
-  }
-
-  /**
     * Provides the crypter for the authenticator.
     *
     * @param configuration The Play configuration.
@@ -100,9 +84,7 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
   /**
     * Provides the authenticator service.
     *
-    * @param cookieSigner         The cookie signer implementation.
     * @param crypter              The crypter implementation.
-    * @param fingerprintGenerator The fingerprint generator implementation.
     * @param idGenerator          The ID generator implementation.
     * @param configuration        The Play configuration.
     * @param clock                The clock instance.
