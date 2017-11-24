@@ -87,7 +87,7 @@ class CredentialsAuthController @Inject()(components: ControllerComponents,
         }
       }
       .recover {
-        case e: ProviderException =>
+        case _: ProviderException =>
           Forbidden
       }
   }

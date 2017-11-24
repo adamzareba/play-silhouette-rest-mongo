@@ -67,6 +67,10 @@ curl http://localhost:9000/badPassword -H 'X-Auth-Token:eyJ0eXAiOiJKV1QiLCJhbGci
 It is possible to reload database with based data with scripts:
 [recreate.bat](database/recreate.bat) or [recreate.sh](database/recreate.sh)
 
+## API documentation
+
+Documentation is available under address: [REST API](http://localhost:9000/docs)
+
 # License
 
 The code is licensed under [Apache License v2.0](http://www.apache.org/licenses/LICENSE-2.0). 
