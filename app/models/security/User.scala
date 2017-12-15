@@ -1,10 +1,10 @@
 package models.security
 
 import com.mohiva.play.silhouette.api.{Identity, LoginInfo}
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, _}
 
 case class User(id: Option[String], loginInfo: LoginInfo, username: String, email: String,
-                firstName: String, lastName: String, avatarURL: Option[String], activated: Boolean) extends Identity {}
+                firstName: String, lastName: String, avatarURL: Option[String], activated: Boolean) extends Identity
 
 object User {
 
@@ -12,9 +12,7 @@ object User {
   implicit val writer = Json.writes[User]
 
   implicit val loginInfoReader = Json.reads[LoginInfo]
-  implicit val loginInfowriter = Json.writes[LoginInfo]
-
-  import play.api.libs.json._
+  implicit val loginInfoWriter = Json.writes[LoginInfo]
 
   implicit object UserWrites extends OWrites[User] {
     def writes(user: User): JsObject =
