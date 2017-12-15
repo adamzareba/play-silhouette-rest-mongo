@@ -2,9 +2,8 @@ name := "play-silhouette-rest-mongo"
  
 version := "1.0" 
 
-lazy val `play-silhouette-rest-mongo` = (project in file(".")).enablePlugins(PlayScala).settings(
-  scalacOptions += "-feature"
-)
+lazy val `play-silhouette-rest-mongo` = (project in file(".")).enablePlugins(PlayScala)
+scalacOptions ++= Seq("-deprecation", "-language:_")
 
 scalaVersion := "2.12.3"
 val reactiveMongoVersion = "0.12.7-play26"
