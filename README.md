@@ -1,4 +1,4 @@
-Silhouette REST Mongodb Seed
+Silhouette REST MongoDB Seed
 =================================
 
 Example project for Play Framework that uses [Silhouette](https://github.com/mohiva/play-silhouette) for authentication and authorization, exposed REST API for sign-up, sign-in.
