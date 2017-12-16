@@ -3,6 +3,8 @@ package models.security
 import com.mohiva.play.silhouette.api.{Identity, LoginInfo}
 import play.api.libs.json.{Json, _}
 
+import scala.util.{Failure, Success, Try}
+
 case class User(id: Option[String], loginInfo: LoginInfo, username: String, email: String,
                 firstName: String, lastName: String, avatarURL: Option[String], activated: Boolean) extends Identity
 
@@ -49,7 +51,7 @@ object User {
     implicit object UserReads extends Reads[User] {
       def reads(json: JsValue): JsResult[User] = json match {
         case user: JsObject =>
-          try {
+          Try {
             val id = (user \ "_id" \ "$oid").asOpt[String]
 
             val providerId = (user \ "loginInfo" \ "providerID").as[String]
@@ -61,6 +63,7 @@ object User {
             val lastName = (user \ "lastName").as[String]
             val avatarURL = (user \ "avatarURL").asOpt[String]
             val activated = (user \ "activated").as[Boolean]
+
             JsSuccess(
               new User(
                 id,
@@ -73,8 +76,9 @@ object User {
                 activated
               )
             )
-          } catch {
-            case cause: Throwable => JsError(cause.getMessage)
+          } match {
+            case Success(value) => value
+            case Failure(cause) => JsError(cause.getMessage)
           }
         case _ => JsError("expected.jsobject")
       }

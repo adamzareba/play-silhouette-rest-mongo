@@ -8,6 +8,7 @@ import play.api.libs.json.Writes._
 import play.api.libs.json._
 
 import scala.concurrent.duration.{FiniteDuration, _}
+import scala.util.{Failure, Success, Try}
 
 object JWTAuthenticatorFormat {
 
@@ -34,7 +35,7 @@ object JWTAuthenticatorFormat {
   implicit object JWTAuthenticatorReads extends Reads[JWTAuthenticator] {
     def reads(json: JsValue): JsResult[JWTAuthenticator] = json match {
       case authenticator: JsObject =>
-        try {
+        Try {
           val id = (authenticator \ "_id").as[String]
           val providerId = (authenticator \ "authenticator" \ "loginInfo" \ "providerID").as[String]
           val providerKey = (authenticator \ "authenticator" \ "loginInfo" \ "providerKey").as[String]
@@ -51,8 +52,9 @@ object JWTAuthenticatorFormat {
               idleTimeout
             )
           )
-        } catch {
-          case cause: Throwable => JsError(cause.getMessage)
+        } match {
+          case Success(value) => value
+          case Failure(cause) => JsError(cause.getMessage)
         }
       case _ => JsError("expected.jsobject")
     }
