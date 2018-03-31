@@ -7,7 +7,7 @@ scalacOptions ++= Seq("-deprecation", "-language:_")
 
 scalaVersion := "2.12.3"
 val reactiveMongoVersion = "0.13.0-play26"
-val silhouetteVersion = "5.0.2"
+val silhouetteVersion = "5.0.3"
 val playMailerVersion = "6.0.1"
 val playJsonVersion = "2.6.9"
 val swaggerUIVersion = "3.6.1"
