@@ -5,7 +5,7 @@ version := "1.0"
 lazy val `play-silhouette-rest-mongo` = (project in file(".")).enablePlugins(PlayScala)
 scalacOptions ++= Seq("-deprecation", "-language:_")
 
-scalaVersion := "2.12.3"
+scalaVersion := "2.12.6"
 val reactiveMongoVersion = "0.13.0-play26"
 val silhouetteVersion = "5.0.3"
 val playMailerVersion = "6.0.1"
